@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   effect,
   viewChild,
   viewChildren,
@@ -11,6 +10,7 @@ import {
   injectVirtualizer,
 } from '@tanstack/angular-virtual'
 import { sentences } from './utils'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -78,13 +78,14 @@ export class RowVirtualizerDynamic {
 
   count = this.sentences.length
 
-  #measureItems = effect(
-    () =>
-      this.virtualItems().forEach((el) => {
-        this.virtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const items = this.virtualItems()
+    // Use untracked to avoid triggering additional effect runs
+    // when measureElement updates internal state
+    items.forEach((el) => {
+      this.virtualizer.measureElement(el.nativeElement)
+    })
+  })
 
   virtualizer = injectVirtualizer(() => ({
     scrollElement: this.scrollElement(),

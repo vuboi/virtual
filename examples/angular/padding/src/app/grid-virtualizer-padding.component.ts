@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   effect,
   input,
   signal,
@@ -9,6 +8,7 @@ import {
   viewChildren,
 } from '@angular/core'
 import { injectVirtualizer } from '@tanstack/angular-virtual'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -79,15 +79,15 @@ import { injectVirtualizer } from '@tanstack/angular-virtual'
   `,
 })
 export class GridVirtualizerPadding {
-  rows = input.required<number[]>()
-  columns = input.required<number[]>()
+  rows = input.required<Array<number>>()
+  columns = input.required<Array<number>>()
 
   scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement')
 
   rowVirtualizer = injectVirtualizer(() => ({
     scrollElement: this.scrollElement(),
     count: this.rows().length,
-    estimateSize: (index) => this.rows()[index]!,
+    estimateSize: (index) => this.rows()[index],
     overscan: 5,
     paddingStart: 200,
     paddingEnd: 200,
@@ -98,7 +98,7 @@ export class GridVirtualizerPadding {
     horizontal: true,
     scrollElement: this.scrollElement(),
     count: this.columns().length,
-    estimateSize: (index) => this.columns()[index]!,
+    estimateSize: (index) => this.columns()[index],
     overscan: 5,
     paddingStart: 200,
     paddingEnd: 200,
@@ -107,14 +107,13 @@ export class GridVirtualizerPadding {
 
   virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem')
 
-  #measureItems = effect(
-    () =>
-      this.virtualItems().forEach((el) => {
-        this.rowVirtualizer.measureElement(el.nativeElement)
-        this.columnVirtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const items = this.virtualItems()
+    items.forEach((el) => {
+      this.rowVirtualizer.measureElement(el.nativeElement)
+      this.columnVirtualizer.measureElement(el.nativeElement)
+    })
+  })
 
   show = signal(true)
 

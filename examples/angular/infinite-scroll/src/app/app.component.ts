@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   effect,
   viewChild,
@@ -12,11 +11,12 @@ import {
   injectInfiniteQuery,
   provideQueryClient,
 } from '@tanstack/angular-query-experimental'
+import type { ElementRef } from '@angular/core'
 
 async function fetchServerPage(
   limit: number,
   offset: number = 0,
-): Promise<{ rows: string[]; nextOffset: number }> {
+): Promise<{ rows: Array<string>; nextOffset: number }> {
   const rows = new Array(limit)
     .fill(0)
     .map((e, i) => `Async loaded row #${i + offset * limit}`)
@@ -103,25 +103,20 @@ export class InfiniteScrollComponent {
     overscan: 5,
   }))
 
-  #fetchNextPage = effect(
-    () => {
-      const lastItem =
-        this.virtualizer.getVirtualItems()[
-          this.virtualizer.getVirtualItems().length - 1
-        ]
-      if (!lastItem) {
-        return
-      }
-      if (
-        lastItem.index >= this.allRows().length - 1 &&
-        this.query.hasNextPage() &&
-        !this.query.isFetchingNextPage()
-      ) {
-        this.query.fetchNextPage()
-      }
-    },
-    { allowSignalWrites: true },
-  )
+  #fetchNextPage = effect(() => {
+    const virtualItems = this.virtualizer.getVirtualItems()
+    const lastItem = virtualItems[virtualItems.length - 1]
+    if (!lastItem) {
+      return
+    }
+    if (
+      lastItem.index >= this.allRows().length - 1 &&
+      this.query.hasNextPage() &&
+      !this.query.isFetchingNextPage()
+    ) {
+      this.query.fetchNextPage()
+    }
+  })
 }
 
 @Component({

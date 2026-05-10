@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   afterNextRender,
   effect,
   signal,
@@ -11,6 +10,7 @@ import {
 } from '@angular/core'
 import { injectWindowVirtualizer } from '@tanstack/angular-virtual'
 import { sentences } from './utils'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -75,13 +75,12 @@ export class RowVirtualizerDynamicWindow {
 
   count = this.sentences.length
 
-  #measureItems = effect(
-    () =>
-      this.virtualItems().forEach((el) => {
-        this.virtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const items = this.virtualItems()
+    items.forEach((el) => {
+      this.virtualizer.measureElement(el.nativeElement)
+    })
+  })
 
   virtualizer = injectWindowVirtualizer(() => ({
     count: this.count,

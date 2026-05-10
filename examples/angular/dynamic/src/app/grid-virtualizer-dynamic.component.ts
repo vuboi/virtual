@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   afterNextRender,
   computed,
   effect,
@@ -14,6 +13,7 @@ import {
   injectWindowVirtualizer,
 } from '@tanstack/angular-virtual'
 import { generateColumns, generateData } from './utils'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -115,11 +115,10 @@ export class GridVirtualizerDynamic {
 
   virtualRows = viewChildren<ElementRef<HTMLDivElement>>('virtualRow')
 
-  #measureItems = effect(
-    () =>
-      this.virtualRows().forEach((el) => {
-        this.rowVirtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const rows = this.virtualRows()
+    rows.forEach((el) => {
+      this.rowVirtualizer.measureElement(el.nativeElement)
+    })
+  })
 }

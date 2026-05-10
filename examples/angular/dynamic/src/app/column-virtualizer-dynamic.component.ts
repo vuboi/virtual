@@ -1,13 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   effect,
   viewChild,
   viewChildren,
 } from '@angular/core'
 import { injectVirtualizer } from '@tanstack/angular-virtual'
 import { sentences } from './utils'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -56,13 +56,12 @@ export class ColumnVirtualizerDynamic {
 
   count = this.sentences.length
 
-  #measureItems = effect(
-    () =>
-      this.virtualItems().forEach((el) => {
-        this.virtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const items = this.virtualItems()
+    items.forEach((el) => {
+      this.virtualizer.measureElement(el.nativeElement)
+    })
+  })
 
   virtualizer = injectVirtualizer(() => ({
     horizontal: true,

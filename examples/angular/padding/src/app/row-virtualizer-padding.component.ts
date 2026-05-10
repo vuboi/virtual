@@ -1,13 +1,13 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   effect,
   input,
   viewChild,
   viewChildren,
 } from '@angular/core'
 import { injectVirtualizer } from '@tanstack/angular-virtual'
+import type { ElementRef } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -45,19 +45,18 @@ import { injectVirtualizer } from '@tanstack/angular-virtual'
   `,
 })
 export class RowVirtualizerPadding {
-  rows = input.required<number[]>()
+  rows = input.required<Array<number>>()
 
   scrollElement = viewChild<ElementRef<HTMLDivElement>>('scrollElement')
 
   virtualItems = viewChildren<ElementRef<HTMLDivElement>>('virtualItem')
 
-  #measureItems = effect(
-    () =>
-      this.virtualItems().forEach((el) => {
-        this.virtualizer.measureElement(el.nativeElement)
-      }),
-    { allowSignalWrites: true },
-  )
+  #measureItems = effect(() => {
+    const items = this.virtualItems()
+    items.forEach((el) => {
+      this.virtualizer.measureElement(el.nativeElement)
+    })
+  })
 
   virtualizer = injectVirtualizer(() => ({
     scrollElement: this.scrollElement(),
