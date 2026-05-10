@@ -1,8 +1,8 @@
 {
-  "name": "@tanstack/angular-virtual",
-  "version": "4.0.2",
-  "description": "Headless UI for virtualizing scrollable elements in Angular",
-  "author": "Garrett Darnell",
+  "name": "@shival99/angular-virtual",
+  "version": "4.0.10",
+  "description": "Headless UI for virtualizing scrollable elements in Angular - custom Angular signal compatibility build",
+  "author": "Garrett Darnell, fixed by shival99",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -46,16 +46,18 @@
     "build": "ng-packagr -p ng-package.json -c tsconfig.build.json"
   },
   "dependencies": {
-    "@tanstack/virtual-core": "workspace:*",
+    "@tanstack/virtual-core": "^3.14.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@angular/core": "^18.1.0",
-    "ng-packagr": "^18.1.0",
-    "typescript": "5.4.5"
+    "@angular/compiler": "^19.0.0",
+    "@angular/compiler-cli": "^19.0.0",
+    "@angular/core": "^19.0.0",
+    "ng-packagr": "^19.0.0",
+    "typescript": "5.6.3"
   },
   "peerDependencies": {
-    "@angular/core": ">=18.1.0"
+    "@angular/core": ">=19.0.0"
   },
   "sideEffects": false
 }
